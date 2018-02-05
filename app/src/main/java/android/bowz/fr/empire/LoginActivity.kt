@@ -23,13 +23,22 @@ import android.widget.TextView
 
 import java.util.ArrayList
 import android.Manifest.permission.READ_CONTACTS
+import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
 
 import kotlinx.android.synthetic.main.activity_login.*
+
+
+// TODO("Accès au https") http://ogrelab.ikratko.com/using-android-volley-with-self-signed-certificate/
 
 /**
  * A login screen that offers login via email/password.
  */
 class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
+
+
+    private val serverUrl = "http://86.237.179.92/"
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -111,7 +120,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         var focusView: View? = null
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
+        if (passwordStr.isEmpty() && !isPasswordValid(passwordStr)) {
             password.error = getString(R.string.error_invalid_password)
             focusView = password
             cancel = true
@@ -242,23 +251,19 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
     inner class UserLoginTask internal constructor(private val mEmail: String, private val mPassword: String) : AsyncTask<Void, Void, Boolean>() {
 
         override fun doInBackground(vararg params: Void): Boolean? {
-            // TODO: attempt authentication against a network service.
+//            // TODO: attempt authentication against a network service.
+//
+            val urlWithCredencials = serverUrl + "api/login?email=" + mEmail + "&password=" + mPassword
+
+            val jsonObjectRequest =
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000)
+                // Connextion au serv
+                JsonObjectRequest(Request.Method.GET,urlWithCredencials,null,null,null)
             } catch (e: InterruptedException) {
                 return false
             }
-
-            return DUMMY_CREDENTIALS
-                    .map { it.split(":") }
-                    .firstOrNull { it[0] == mEmail }
-                    ?.let {
-                        // Account exists, return true if the password matches.
-                        it[1] == mPassword
-                    }
-                    ?: true
+            return true
         }
 
         override fun onPostExecute(success: Boolean?) {
@@ -266,8 +271,10 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             showProgress(false)
 
             if (success!!) {
-                finish()
+                Toast.makeText(this@LoginActivity,"Success",Toast.LENGTH_SHORT).show()
+                //finish()
             } else {
+                Toast.makeText(this@LoginActivity,"Non success",Toast.LENGTH_SHORT).show()
                 password.error = getString(R.string.error_incorrect_password)
                 password.requestFocus()
             }
