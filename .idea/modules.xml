@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Empire.iml" filepath="$PROJECT_DIR$/Empire.iml" />
+      <module fileurl="file://C:\Users\wjmj2825\Documents\Empire\Empire.iml" filepath="C:\Users\wjmj2825\Documents\Empire\Empire.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\wjmj2825\Documents\Empire\app\app.iml" filepath="C:\Users\wjmj2825\Documents\Empire\app\app.iml" />
     </modules>
   </component>
 </project>
