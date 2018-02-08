@@ -11,4 +11,39 @@
     <string name="error_incorrect_password">Mot de passe incorrect</string>
     <string name="error_field_required">Tu comptais faire comment au juste ?</string>
     <string name="permission_rationale">"Si tu me files pas les droits j'pourrai pas t'airder des masses gros… "</string>
+
+    <string name="hex_vertex_shader">
+        uniform mat4 uMVPMatrix;
+        attribute vec4 aPosition;
+        attribute vec2 aColor;
+        varying vec3 vColor;
+        void main(){
+            if(aColor.x > 1.5){
+                vColor = vec3 (0.0, 0.0, 1.0);
+            } else if(aColor.x > 0.5){
+                vColor = vec3 (0.0, 1.0, 0.0);
+            } else if(aColor.x > -0.5){
+                vColor = vec3 (1.0, 0.0, 0.0);
+            } else {
+                vColor = vec3 (0.0, 0.0, 0.0);
+            }
+            gl_Position = uMVPMatrix * aPosition;
+        }
+    </string>
+    <string name="hex_fragment_shader">
+        precision mediump float;
+        const float width = 0.05;
+        varying vec3 vColor;
+        void main(){
+            if(vColor.x > width){
+                gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0);
+            } else if(vColor.y > width){
+                gl_FragColor = vec4 (0.0, 1.0, 0.0, 1.0);
+            } else if(vColor.z > width){
+                gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);
+            } else {
+                gl_FragColor = vec4 (0.2, 0.2, 0.2, 1.0);
+            }
+        }
+    </string>
 </resources>
