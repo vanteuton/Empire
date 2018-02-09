@@ -44,7 +44,7 @@ interface EmpiresService {
                  @Query("email") email: String): Call<ReturnMessage>
 
     @GET("world")
-    fun getAnswers(@Header("Authorization") Authorization: String): Call<ReturnMessage>
+    fun getUser(@Header("Authorization") Authorization: String): Call<ReturnMessage>
 }
 
 

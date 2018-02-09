@@ -3,6 +3,7 @@ package android.bowz.fr.empire
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -10,10 +11,14 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.google.gson.reflect.TypeToken
+
+
 
 
 
@@ -23,6 +28,8 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
 
     private var mService: EmpiresService? = null
+    val gson = Gson()
+    var userTypeToken = object : TypeToken<ArrayList<User>>(){}.type
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -79,7 +86,7 @@ class LoginActivity : AppCompatActivity() {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true)
+            //showProgress(true)
             loadAnswers()
         }
     }
@@ -134,7 +141,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loadAnswers() {
-        mService!!.getAnswers("bobowz", "quentin.duteil@gmail.com").enqueue(object : Callback<ReturnMessage> {
+        mService!!.getLogin("bobowz", "quentin.duteil@gmail.com").enqueue(object : Callback<ReturnMessage> {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
 
                 if (response.isSuccessful()) {
@@ -155,13 +162,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loadplayer(accessToken : String){
-        mService!!.getAnswers("Bearer $accessToken").enqueue(object : Callback<ReturnMessage> {
+        mService!!.getUser("Bearer $accessToken").enqueue(object : Callback<ReturnMessage> {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
-
-                if (response.isSuccessful()) {
-                    Log.d("MainActivity loadplayer", "posts loaded from API")
-                    Log.d("MainActivity loadplayer", response.toString())
-                    Toast.makeText(this@LoginActivity,"Ton petit nom c'est pas ${response.body()?.user?.name.toString()}",Toast.LENGTH_LONG).show()
+                if (response.isSuccessful) {
+                    val user = response.body()?.user.toString()
+                    Log.d("jsonResponse",user)
+//                    val intent = Intent(this@LoginActivity,MainActivity::class.java)
+//                    val user = gson.fromJson<User>(response.body()?.user.toString(),userTypeToken)
+//                    intent.putExtra("user",response.body()?.user.toString())
+                    Toast.makeText(this@LoginActivity,user,Toast.LENGTH_LONG).show()
                 } else {
                     val statusCode = response.code()
                     // handle request errors depending on status code
