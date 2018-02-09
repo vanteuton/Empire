@@ -40,8 +40,8 @@ interface EmpiresService {
     val answers: Call<ReturnMessage>
 
     @GET("login?")
-    fun getAnswers(@Query("password") password: String,
-                   @Query("email") email: String): Call<ReturnMessage>
+    fun getLogin(@Query("password") password: String,
+                 @Query("email") email: String): Call<ReturnMessage>
 
     @GET("world")
     fun getAnswers(@Header("Authorization") Authorization: String): Call<ReturnMessage>
