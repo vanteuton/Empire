@@ -1,55 +1,82 @@
+package android.bowz.fr.empire
+
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Query
+
 
 //todo https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
 
-
-//Inside the remote package, create an interface and call it SOService.
-// This interface contains methods we are going to use to execute HTTP requests such as GET, POST, PUT, PATCH, and DELETE.
-// For this tutorial, we are going to execute a GET request.
-
-interface SOService {
-
-    @get:GET("/answers?order=desc&sort=activity&site=stackoverflow")
-    val answers: Call<SOAnswersResponse>
-
-    @GET("/answers?order=desc&sort=activity&site=stackoverflow")
-    fun getAnswers(@Query("tagged") tags: String): Call<SOAnswersResponse>
-}
-
-//To issue network requests to a REST API with Retrofit, we need to create an instance using the Retrofit.
-// Builder class and configure it with a base URL.
-//Create a new sub-package package inside the data package and name it remote. Now inside remote, create a Java class and name it RetrofitClient.
-// This class will create a singleton of Retrofit. Retrofit needs a base URL to build its instance, so we will pass a URL when calling
-// RetrofitClient.getClient(String baseUrl). This URL will then be used to build the instance in line 13. We are also specifying the JSON converter we need (Gson) in line 14.
 
 object RetrofitClient {
 
     private var retrofit: Retrofit? = null
 
+    val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+
     fun getClient(baseUrl: String): Retrofit {
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
                     .baseUrl(baseUrl)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
         }
-        return retrofit
+        return retrofit!!
     }
 }
 
+interface EmpiresService {
 
+    @get:GET("login?")
+    val answers: Call<ReturnMessage>
 
-//Now are going to create a utility class. We'll name it ApiUtils. This class will have the base URL as a static variable and also provide the
-// SOService interface to our application through the getSOService() static method.
+    @GET("login?")
+    fun getAnswers(@Query("password") password: String,
+                   @Query("email") email: String): Call<ReturnMessage>
+
+    @GET("world")
+    fun getAnswers(@Header("token") token: String): Call<ReturnMessage>
+}
+
 
 object ApiUtils {
 
-    val BASE_URL = "https://api.stackexchange.com/2.2/"
+    val BASE_URL = "http://lfbn-1-9328-179.w86-237.abo.wanadoo.fr/api/"
 
-    val soService: SOService
-        get() = RetrofitClient.getClient(BASE_URL).create(SOService::class.java)
+    val empiresService: EmpiresService
+        get() = RetrofitClient.getClient(BASE_URL).create(EmpiresService::class.java)
+}
+
+class Data {
+
+    @SerializedName("accessToken")
+    @Expose
+    var accessToken: String? = null
+
+}
+
+class ReturnMessage {
+
+    @SerializedName("status")
+    @Expose
+    var status: Boolean? = null
+    @SerializedName("data")
+    @Expose
+    var data: Data? = null
+    @SerializedName("message")
+    @Expose
+    var message: String? = null
+    @SerializedName("errors")
+    @Expose
+    var errors: List<Any>? = null
+
 }

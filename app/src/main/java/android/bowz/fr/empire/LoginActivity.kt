@@ -3,7 +3,6 @@ package android.bowz.fr.empire
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -14,9 +13,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import SOService
-
-
 
 
 // TODO("Accès au https") http://ogrelab.ikratko.com/using-android-volley-with-self-signed-certificate/
@@ -26,7 +22,7 @@ import SOService
  */
 class LoginActivity : AppCompatActivity() {
 
-    private val mService: SOService? = null
+    private var mService: EmpiresService? = null
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -34,21 +30,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        email.setText("quentin.duteil@gmail.com")
+        password.setText("bobowz")
+        mService = ApiUtils.empiresService
         email_sign_in_button.setOnClickListener { attemptLogin() }
-        val mService = ApiUtils.soService
     }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete()
-            }
-        }
-    }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -56,10 +42,6 @@ class LoginActivity : AppCompatActivity() {
      * errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
-//        todo
-//        if (mAuthTask != null) {
-//            return
-//        }
 
         // Reset errors.
         email.error = null
@@ -98,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-//            TODO faire la co
+            loadAnswers()
         }
     }
 
@@ -152,21 +134,41 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loadAnswers() {
-        mService?.getAnswers()?.enqueue(object : Callback<SOAnswersResponse>() {
-            fun onResponse(call: Call<SOAnswersResponse>, response: Response<SOAnswersResponse>) {
+        mService!!.getAnswers("bobowz", "quentin.duteil@gmail.com").enqueue(object : Callback<ReturnMessage> {
+            override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
 
                 if (response.isSuccessful()) {
-                    mAdapter.updateAnswers(response.body().getItems())
-                    Log.d("MainActivity", "posts loaded from API")
+                    Log.d("MainActivity loadAnswers", "posts loaded from API")
+                    val accessToken = response.body()?.data?.accessToken
+                    loadplayer(accessToken!!)
                 } else {
                     val statusCode = response.code()
                     // handle request errors depending on status code
                 }
             }
 
-            fun onFailure(call: Call<SOAnswersResponse>, t: Throwable) {
-                showErrorMessage()
-                Log.d("MainActivity", "error loading from API")
+            override fun onFailure(call: Call<ReturnMessage>, t: Throwable) {
+                Log.d("MainActivity loadAnswers", "error loading from API")
+
+            }
+        })
+    }
+
+    fun loadplayer(accessToken : String){
+        mService!!.getAnswers(accessToken).enqueue(object : Callback<ReturnMessage> {
+            override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
+
+                if (response.isSuccessful()) {
+                    Log.d("MainActivity loadplayer", "posts loaded from API")
+                    Log.d("MainActivity loadplayer", response.toString())
+                } else {
+                    val statusCode = response.code()
+                    // handle request errors depending on status code
+                }
+            }
+
+            override fun onFailure(call: Call<ReturnMessage>, t: Throwable) {
+                Log.d("MainActivity loadplayer", "error loading from API")
 
             }
         })
