@@ -9,13 +9,13 @@ import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-// TODO("Accès au https") http://ogrelab.ikratko.com/using-android-volley-with-self-signed-certificate/
 
 /**
  * A login screen that offers login via email/password.
@@ -138,7 +138,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
 
                 if (response.isSuccessful()) {
-                    Log.d("MainActivity loadAnswers", "posts loaded from API")
+                    Log.d("MainActivityLoadAnswers", "posts loaded from API")
                     val accessToken = response.body()?.data?.accessToken
                     loadplayer(accessToken!!)
                 } else {
@@ -148,19 +148,20 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ReturnMessage>, t: Throwable) {
-                Log.d("MainActivity loadAnswers", "error loading from API")
+                Log.d("MainActivityLoadAnswers", "error loading from API")
 
             }
         })
     }
 
     fun loadplayer(accessToken : String){
-        mService!!.getAnswers(accessToken).enqueue(object : Callback<ReturnMessage> {
+        mService!!.getAnswers("Bearer $accessToken").enqueue(object : Callback<ReturnMessage> {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
 
                 if (response.isSuccessful()) {
                     Log.d("MainActivity loadplayer", "posts loaded from API")
                     Log.d("MainActivity loadplayer", response.toString())
+                    Toast.makeText(this@LoginActivity,"Ton petit nom c'est pas ${response.body()?.user?.name.toString()}",Toast.LENGTH_LONG).show()
                 } else {
                     val statusCode = response.code()
                     // handle request errors depending on status code

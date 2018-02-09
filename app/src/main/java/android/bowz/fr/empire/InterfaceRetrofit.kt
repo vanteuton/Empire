@@ -44,7 +44,7 @@ interface EmpiresService {
                    @Query("email") email: String): Call<ReturnMessage>
 
     @GET("world")
-    fun getAnswers(@Header("token") token: String): Call<ReturnMessage>
+    fun getAnswers(@Header("Authorization") Authorization: String): Call<ReturnMessage>
 }
 
 
@@ -54,29 +54,4 @@ object ApiUtils {
 
     val empiresService: EmpiresService
         get() = RetrofitClient.getClient(BASE_URL).create(EmpiresService::class.java)
-}
-
-class Data {
-
-    @SerializedName("accessToken")
-    @Expose
-    var accessToken: String? = null
-
-}
-
-class ReturnMessage {
-
-    @SerializedName("status")
-    @Expose
-    var status: Boolean? = null
-    @SerializedName("data")
-    @Expose
-    var data: Data? = null
-    @SerializedName("message")
-    @Expose
-    var message: String? = null
-    @SerializedName("errors")
-    @Expose
-    var errors: List<Any>? = null
-
 }
