@@ -165,12 +165,14 @@ class LoginActivity : AppCompatActivity() {
         mService!!.getUser("Bearer $accessToken").enqueue(object : Callback<ReturnMessage> {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
                 if (response.isSuccessful) {
-                    val user = response.body()?.user.toString()
-                    Log.d("jsonResponse",user)
+                    val user = response.body()?.user
+                    val map = response.body()?.user?.map
+//                    val province = Province(response.body()?.user?.provinces!![0].name)
+                    Log.d("jsonResponse",map.toString())
 //                    val intent = Intent(this@LoginActivity,MainActivity::class.java)
 //                    val user = gson.fromJson<User>(response.body()?.user.toString(),userTypeToken)
 //                    intent.putExtra("user",response.body()?.user.toString())
-                    Toast.makeText(this@LoginActivity,user,Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@LoginActivity,"user -> ${user!!.provinces.toString()}",Toast.LENGTH_LONG).show()
                 } else {
                     val statusCode = response.code()
                     // handle request errors depending on status code
