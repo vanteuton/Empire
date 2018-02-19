@@ -9,7 +9,7 @@ android {
         config {
             keyAlias 'empireKey'
             keyPassword 'empire'
-            storeFile file('C:/Users/wjmj2825/Documents/Empire/empire_keystore.jks')
+            storeFile file('../empire_keystore.jks')
             storePassword 'empire'
         }
     }
