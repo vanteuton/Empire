@@ -212,7 +212,12 @@ class HexagonView(context: Context) : GLSurfaceView(context), Renderer {
     }
 
     // tools
-
+    /**
+     * ça ça doit être la fonction qui fais
+        changer l'angle de vue, et clairement elle me casse les noix
+        multiplyMM ça doit multiplier les matrices pour changer la vue.
+        'TAIN CA ME LES BROUTTE
+     */
     private fun updateMVP() {
         Matrix.multiplyMM(tmp1Matrix, 0, frustumMatrix, 0, povMatrix, 0)
         Matrix.multiplyMM(tmp2Matrix, 0, tmp1Matrix, 0, sensor.rotationMatrix, 0)

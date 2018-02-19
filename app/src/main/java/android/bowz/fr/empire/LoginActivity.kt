@@ -3,14 +3,12 @@ package android.bowz.fr.empire
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
@@ -23,17 +21,13 @@ import com.google.gson.reflect.TypeToken
 
 
 /**
- * A login screen that offers login via email/password.
- */
+*Activité de login simple, email et password.
+*/
 class LoginActivity : AppCompatActivity() {
 
     private var mService: EmpiresService? = null
     val gson = Gson()
     var userTypeToken = object : TypeToken<ArrayList<User>>(){}.type
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -44,10 +38,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
+    * Essaie de faire une connexion en récupérant les infos des textEdit. Si la co échoue on ne retente pas et on présente l'erreur.
+    */
     private fun attemptLogin() {
 
         // Reset errors.
@@ -87,15 +79,26 @@ class LoginActivity : AppCompatActivity() {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             //showProgress(true)
-            loadAnswers()
+            loadToken()
         }
     }
 
+
+    /**
+     * Vérifie si l'email est valide
+     *
+     * @param email La String de l'email à tester
+     */
     private fun isEmailValid(email: String): Boolean {
         //TODO: Replace this with your own logic
         return email.contains("@")
     }
 
+    /**
+     * Vérifie si le password est valide
+     *
+     * @param password La String du password à tester
+     */
     private fun isPasswordValid(password: String): Boolean {
         //TODO: Replace this with your own logic
         return password.length > 4
@@ -103,7 +106,7 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     * Shows the progress UI and hides the login form.
+     * Affiche un spinner et cache le formulaire
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private fun showProgress(show: Boolean) {
@@ -140,7 +143,12 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun loadAnswers() {
+
+    /**
+     * Envoi le mail et le pass au serveur et essaie de récupérer le Token
+     * Si le token est recupéré la fonction appelle le chargement de la partie en cours : loadWorld
+     */
+    fun loadToken() {
         mService!!.getLogin("bobowz", "quentin.duteil@gmail.com").enqueue(object : Callback<ReturnMessage> {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
 
@@ -161,18 +169,26 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
+
+
+    /**
+     * Envoi le token au serveur et essaie de récupérer les variables du jeu en cours
+     * Si tout est recupéré la fonction charge la partie en cours : MainActivity
+     */
     fun loadplayer(accessToken : String){
         mService!!.getUser("Bearer $accessToken").enqueue(object : Callback<ReturnMessage> {
             override fun onResponse(call: Call<ReturnMessage>, response: Response<ReturnMessage>) {
                 if (response.isSuccessful) {
                     val user = response.body()?.user
+                    print(response.body())
                     val map = response.body()?.user?.map
 //                    val province = Province(response.body()?.user?.provinces!![0].name)
                     Log.d("jsonResponse",map.toString())
 //                    val intent = Intent(this@LoginActivity,MainActivity::class.java)
 //                    val user = gson.fromJson<User>(response.body()?.user.toString(),userTypeToken)
 //                    intent.putExtra("user",response.body()?.user.toString())
-                    Toast.makeText(this@LoginActivity,"user -> ${user!!.provinces.toString()}",Toast.LENGTH_LONG).show()
+//                    Toast.makeText(this@LoginActivity,"user -> ${user!!.provinces.toString()}",Toast.LENGTH_LONG).show()
+//                    startActivity(intent)
                 } else {
                     val statusCode = response.code()
                     // handle request errors depending on status code

@@ -53,6 +53,9 @@ fun difference(resultVector: FloatArray, vector1: FloatArray, vector2: FloatArra
     }
 }
 
+/**Alors ça pour ce que j'en comprends ça adapte l'affichage à la taille d'écrans
+ * Me demande MEME PAS pour les paramètres
+ */
 fun frustum(frustum: FloatArray, width: Int, height: Int, near: Float, far: Float) {
     if (width > height) {
         val ratio = height.toFloat() / width
